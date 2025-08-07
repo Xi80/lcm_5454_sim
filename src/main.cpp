@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
       timerFlag = wroteFlag = false;
     }
   }
-
+  SDL_RemoveTimer(timerID);
   fclose(fp);
   return 0;
 }
