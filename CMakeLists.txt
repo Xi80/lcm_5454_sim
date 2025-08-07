@@ -9,6 +9,8 @@ find_package(SDL2 REQUIRED)
 
 add_executable(${PROJ_NAME}
     src/main.cpp
+    src/lcd/fontx.cpp
+    src/lcd/lcd_4bit.cpp
 )
 
 include_directories(${PROJ_NAME} PRIVATE ${CMAKE_CURRENT_LIST_DIR})
