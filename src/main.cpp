@@ -2,46 +2,39 @@
 
 #include <cstdio>
 
+#include "lcd/fontx.hpp"
 #include "lcd/lcd_4bit.hpp"
-
-const int FPS = 30;
-const int FRAME_DELAY_MS = 1000 / FPS;
-
-bool timerFlag;
-bool wroteFlag;
-uint8_t v[4 * 40 * 200];
-
-Uint32 fpsCallback(Uint32 interval, void* param) {
-  timerFlag = true;
-  return interval;
-}
-
-void vsync() {
-  if (!wroteFlag) {
-    memcpy(gLcd.vram, v, sizeof(gLcd.vram));
-    wroteFlag = true;
-  }
-}
+void vsync() {}
 
 int main(int argc, char** argv) {
-  FILE* fp;
-  fp = fopen("mov.bin", "rb");
+  const uint16_t text[] = {
+      0x93fa, 0x967b, 0x8cea, 0x955c, 0x8ea6, 0x8365, 0x8358, 0x8367,
+  };
 
   LcdInit(vsync);
-  SDL_TimerID timerID = SDL_AddTimer(FRAME_DELAY_MS, fpsCallback, NULL);
-  while (LcdProcess()) {
-    if (timerFlag && wroteFlag) {
-      int r = fread(v, sizeof(v[0]), sizeof(v) / sizeof(v[0]), fp);
 
-      if (r == 0) {
-        fseek(fp, SEEK_SET, 0);
-        r = fread(v, sizeof(v[0]), sizeof(v) / sizeof(v[0]), fp);
+  for (int l = 0; l < LCD_LAYER_COUNT; l++) {
+    uint8_t* v = &gLcd.vram[l * 40 * 200];
+    uint8_t buf[2 * 16];
+    for (int c = 0; c < sizeof(text) / sizeof(text[0]); c++) {
+      KanjiReadX(eFont_VLG, text[c], buf);
+      for (int y = 0; y < 16; y++) {
+        memcpy(&v[40 * y + 2 * c], &buf[2 * y], 2);
       }
-
-      timerFlag = wroteFlag = false;
     }
   }
-  SDL_RemoveTimer(timerID);
-  fclose(fp);
+
+  for (int l = 0; l < LCD_LAYER_COUNT; l++) {
+    uint8_t* v = &gLcd.vram[l * 40 * 200];
+    uint8_t buf[4 * 32];
+    for (int c = 0; c < sizeof(text) / sizeof(text[0]); c++) {
+      KanjiReadX(eFont_HSP, text[c], buf);
+      for (int y = 0; y < 32; y++) {
+        memcpy(&v[40 * (y + 16) + 4 * c], &buf[4 * y], 4);
+      }
+    }
+  }
+  while (LcdProcess()) {
+  }
   return 0;
 }

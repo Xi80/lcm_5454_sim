@@ -4,8 +4,6 @@
 #include <cstdlib>
 #include <cstring>
 
-#include "lcd/fontx.hpp"
-
 #ifndef __arm__
 #include <SDL2/SDL.h>
 
