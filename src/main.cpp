@@ -2,7 +2,7 @@
 
 #include <cstdio>
 
-#include "lcd/fontx.hpp"
+#include "gfx/fontx.hpp"
 #include "lcd/lcd_4bit.hpp"
 void vsync() {}
 
